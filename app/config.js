@@ -1,4 +1,4 @@
-var config = modlue.exports;
+var config = module.exports;
 var PRODUCTION = process.env.NODE_ENV === 'production';
 
 config.express = {
@@ -7,5 +7,5 @@ config.express = {
 };
 
 if (PRODUCTION) {
-  confix.express.ip = "0.0.0.0";
+  config.express.ip = "0.0.0.0";
 }

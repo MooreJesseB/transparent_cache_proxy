@@ -1,5 +1,5 @@
 var app = require('./index');
-var config = require('app/config');
+var config = require('./config');
 
 var bole = require('bole');
 
