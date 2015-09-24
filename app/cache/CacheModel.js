@@ -19,18 +19,20 @@ Cache.prototype.now = function() {
 };
 
 Cache.prototype.promoteElement = function(url) {
+  console.log("Promoting node");
   this._memCache.updateTimestamp(url, this.now());
 };
 
 Cache.prototype.checkCacheLimits = function(object) {
-  // Check max entries
+  console.log("Check cache limits");
   this.checkElementsLength();
-  this.checkSizeLimits(object);
+  if (this.checkSizeLimits(object)) {
+    return true;
+  }
 };
 
 Cache.prototype.checkElementsLength = function() {
   if (this._memCache.getLength() > this._config.cacheSizeElements - 1) {
-    console.log("checkElementsLength");
     this._memCache.remove();
   }
 
@@ -38,28 +40,47 @@ Cache.prototype.checkElementsLength = function() {
 };
 
 Cache.prototype.checkCacheDurations = function() {
+  var nodesRemoved = [];
+
   if (this._memCache.getLength() > 0) {
-    while (this._memeCache.getTail() && this._memCache.getTail().timestamp < this.now()) {
-      console.log("Removing old cache");
-      this._memCache.remove();
-    }  
+    while (
+      this._memCache.getTail() && 
+      this._memCache.getTail().timestamp < this.now() - this._config.cacheDuration
+    )
+
+      {
+        var nodeId = this._memCache.remove();
+        console.log("Node duration expired - Removing old cache\n", nodeId, '\n');
+        nodesRemoved.push(nodeId);
+      }  
   }
+
+  return nodesRemoved;
 };
 
 Cache.prototype.checkSizeLimits = function(object) {
   // id (or url) is also used as the primary key for the list objects and needs to be taken into account
-  var newEntrySize = this.sizeOfObject(this._memCache.makeNode(object)) + this.sizeOfObject(object.id);
+  var newEntrySize = this.sizeOfObject(object) + this.sizeOfObject(object.id);
   var currentNode;
 
-  while (newEntrySize + this._sizeBytes > this._config.cachSizeBytes) {
-    currentNode = this._memCache.getTail();
-    console.log("Check size limits");
-    if (currentNode) {
-      this._memCache.remove();
-      this._sizeBytes -= this.sizeOfObject(currentNode);  
-    } else {
-      // Edge case catch all break
+  while (newEntrySize + this._sizeBytes > this._config.cacheSizeBytes) {
+
+    if (newEntrySize > this._config.cacheSizeBytes) {
       console.log("Cache is not large enough to store this url");
+      return true;
+    }
+
+    currentNode = this._memCache.getTail();
+
+    if (currentNode) {
+
+      this._memCache.remove();
+      this._sizeBytes -= this.sizeOfObject(currentNode) + this.sizeOfObject(currentNode.id);  
+
+      console.log("Cache is too large: removing oldest node");
+    } else {
+
+      // Edge case catch all break
       this.clearCache();
       this._sizeBytes = 0;
       break;
@@ -93,16 +114,19 @@ Cache.prototype.sizeOfObject = function(object) {
   return bytes;
 };
 
-Cache.prototype.createNewEntry = function(url, lastUpdated, data) {
+Cache.prototype.createNewEntry = function(url, lastUpdated, data, timestamp) {
 
-  var node = this._memCache.makeNode(url, data, lastUpdated, this.now());
+  var node = this._memCache.makeNode(url, data, lastUpdated, timestamp || this.now());
 
-  this.checkCacheLimits(node);
+  if (this.checkCacheLimits(node)) {
+    console.log("Error! Can not create node!");
+    return null;
+  }
 
   node = this._memCache.add(node);
 
   // increase the cacheSize in bytes
-  this._sizeBytes += this.sizeOfObject(this._memCache.makeNode(url, data)) + this.sizeOfObject(url);
+  this._sizeBytes += this.sizeOfObject(node) + this.sizeOfObject(url);
 
   return node;
 };
@@ -114,6 +138,15 @@ Cache.prototype.updateElement = function(id, data, lastUpdated) {
 Cache.prototype.clearCache = function() {
   this._memCache = new List();
   this._sizeBytes = 0;
+};
+
+Cache.prototype.cacheEmptyCheck = function() {
+  return (!!this._memCache.getLength());
+};
+
+Cache.prototype.reportCache = function() {
+  console.log("Cache size bytes:", this._sizeBytes);
+  console.log("Cache num elements:", this._memCache.getLength());
 };
 
 module.exports = Cache;

@@ -7,17 +7,14 @@ var router = new express.Router();
 var controller = new cacheController();
 
 function get(req, res) {
-  console.log('\nREQUEST URL:\n', req.url);
+  console.log('\nIncoming, REQUEST URL:\n', req.url);
   
-  // request(req.url, function(error, res, body) {
-  //   console.log("ERROR in request! - ", error);
-  // }).on('response', function(response) {
-  //   // console.log('\nHEADERS:\n', response.parser.headers);
-  //   console.log('\nRES!!!:\n', response.headers);  
-  // }).pipe(res);
+  // request(req.url, function(error, response, body) {
+  //   res.send(response.body);
+  // });
   // return;
   controller.processNewRequest(req.url, function(response) {
-    res = response;
+    res.send(response.body);
   });
 }
 

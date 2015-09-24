@@ -56,6 +56,8 @@
     if (this._length) {
       this._length--;      
     }
+
+    return node.id;
   },
 
   find: function(id) {
@@ -94,7 +96,7 @@
   },
 
   updateTimestamp: function(id, timestamp) {
-    node = this.find(id);
+    var node = this.find(id);
 
     node.data.timestamp = timestamp;
     this.promote(id);
@@ -106,7 +108,7 @@
     node.data = data;
     node.lastUpdated = lastUpdated;
     node.timestamp = timestamp;
-    
+
     this.promote(id);
   },
 

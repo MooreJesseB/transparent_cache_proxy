@@ -5,15 +5,16 @@ var cacheController = require('../../app/cache/cacheController');
 
 var controller = new cacheController();
 
-var testUrl = "http://httpbin.org/cache";
-var testUrl2 = "http://httpbin.org/";
+var urlBasic = "http://httpbin.org/";
+var url304 = "http://httpbin.org/cache";
+
 
 describe('request', function() {
 
   this.timeout(10000);
 
   it('should exist', function(done) {
-    request(testUrl, function(error, response, body) {
+    request(url304, function(error, response, body) {
       if (!error) {
         should.exist(response);
         done();
@@ -24,9 +25,9 @@ describe('request', function() {
     });
   }); 
   it('should return a response code of 304 and have no body', function(done) {
-    request(testUrl, function(error, response, body) {
+    request(url304, function(error, response, body) {
       var options = {
-        uri: testUrl,
+        uri: url304,
         headers: {'If-Modified-Since': response.headers['last-modified']}
       };
       request(options, function(error, response, body) {
@@ -38,7 +39,7 @@ describe('request', function() {
   });
     it('should return a response code of 200', function(done) {
     var res;
-    request.get(testUrl)
+    request.get(url304)
     .on('response', function(response) {
       expect(response.statusCode).to.equal(200);
       done();
@@ -57,9 +58,20 @@ describe('cacheController', function() {
   describe('processNewRequest', function() {
 
     it('should create a new cache element', function(done) {
-      controller.processNewRequest(testUrl, function(response) {
+      controller.processNewRequest(url304, function(response) {
         expect(response.statusCode).to.equal(200);
         done();
+      });
+    });
+    it('should return a cached element', function(done) {
+
+      controller.processNewRequest(url304, function(response, statusCode) {
+
+        controller.processNewRequest(url304, function(response, statusCode) {
+
+          expect(statusCode).to.equal('200 (cache)');
+          done();
+        });
       });
     });
   });
@@ -77,10 +89,10 @@ describe('cacheController', function() {
 
     it('should return a response code of 304', function(done) {
       controller.clearCache();
-      request(testUrl, function(error, response, body) {
-        node = controller.Cache.createNewEntry(testUrl, response.headers['last-modified'], 'data');
+      request(url304, function(error, response, body) {
+        node = controller.Cache.createNewEntry(url304, response.headers['last-modified'], 'data');
         
-        controller.checkUpdated(testUrl, node, function(response, statusCode) {
+        controller.checkUpdated(url304, node, function(response, statusCode) {
           expect(statusCode).to.equal('200 (cache)');
           done();
         });
@@ -89,11 +101,11 @@ describe('cacheController', function() {
     it('should return a response code of 200', function(done) {
       controller.clearCache();
 
-      request(testUrl2, function(error, response, body) {
+      request(urlBasic, function(error, response, body) {
 
-        node = controller.Cache.createNewEntry(testUrl, response.headers.date, 'data');
+        node = controller.Cache.createNewEntry(url304, response.headers.date, 'data');
         
-        controller.checkUpdated(testUrl2, node, function(response) {
+        controller.checkUpdated(urlBasic, node, function(response) {
           expect(response.statusCode).to.equal(200);
           done();
         });
