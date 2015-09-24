@@ -16,6 +16,8 @@ Clone this repository to your local machine.
 
 `git clone https://github.com/MooreJesseB/transparent_cache_proxy.git`
 
+Then type `npm install` in your terminal.
+
 ## Usage
 
 To run the server I prefer to use [nodemon](https://github.com/remy/nodemon). 
