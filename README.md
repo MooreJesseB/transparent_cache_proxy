@@ -48,7 +48,7 @@ TODO: Write history
 
 ## Credits
 
-[]Jesse Moore](https://github.com/MooreJesseB)
+[Jesse Moore](https://github.com/MooreJesseB)
 
 ## License
 
