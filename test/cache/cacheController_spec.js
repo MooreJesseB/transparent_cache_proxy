@@ -79,14 +79,6 @@ describe('cacheController', function() {
   describe('checkUpdated', function() {
     var node;
 
-    // beforeEach(function() {
-    //   controller.clearCache();
-    // });
-
-    // afterEach(function() {
-    //   controller.clearCache();
-    // });
-
     it('should return a response code of 304', function(done) {
       controller.clearCache();
       request(url304, function(error, response, body) {
