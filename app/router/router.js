@@ -9,10 +9,6 @@ var controller = new cacheController();
 function get(req, res) {
   console.log('\nIncoming, REQUEST URL:\n', req.url);
   
-  // request(req.url, function(error, response, body) {
-  //   res.send(response.body);
-  // });
-  // return;
   controller.processNewRequest(req.url, function(response) {
     res.send(response.body);
   });
