@@ -34,6 +34,11 @@ Click `OK` then click `Apply`.
 
 Now all of your http traffic will be routed through the proxy server. Open chrome and start browsing!
 
+The cache is also configurable. You can edit the file `./app/cache/cacheConfig.js` to adjust the cache settings. The three settings that are currently supported are: 
+* `cacheDuration` - How long an element will stay in the cache.
+* `cacheSizeBytes` - How large, in bytes, the cache can be before removing old elements.
+* `cacheSizeElements` - How many unique url elements the cache can store before removing old elements.
+
 ## Contributing
 
 1. Fork it!
