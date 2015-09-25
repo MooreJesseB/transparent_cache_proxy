@@ -37,7 +37,7 @@ describe('request', function() {
       });
     });      
   });
-    it('should return a response code of 200', function(done) {
+  it('should return a response code of 200', function(done) {
     var res;
     request.get(url304)
     .on('response', function(response) {
