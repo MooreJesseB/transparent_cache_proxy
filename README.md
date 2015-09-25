@@ -24,7 +24,8 @@ To run the server I prefer to use [nodemon](https://github.com/remy/nodemon).
 
 You can start the server by simply typing `nodemon` in your terminal.
 
-If there is a permissions issue running the app start script then type the following instead: `nodemon ./app/app.js`
+If there is a permissions issue running the app start script then type the following instead: 
+`nodemon ./app/app.js`
 
 On a mac, to set this server as your computer's proxy go to `System Preferences -> Nework`. Then click the `advanced` button then the `proxies` tab.
 
